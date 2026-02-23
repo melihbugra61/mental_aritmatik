@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Zihinden Toplama Oyunu</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+      color: #fff;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .box {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      padding: 40px 32px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      animation: fadeIn 0.8s ease;
+    }
+    h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 32px;
+      background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    input {
+      padding: 14px;
+      margin: 10px 0;
+      font-size: 1.1rem;
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      text-align: center;
+      font-weight: 600;
+    }
+    input:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.15);
+    }
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    button {
+      padding: 14px 32px;
+      margin: 10px 0;
+      font-size: 1.1rem;
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: #fff;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    #numbers {
+      font-size: 2.5rem;
+      font-weight: 900;
+      margin: 32px 0;
+      display: none;
+      line-height: 1.6;
+      color: #fff;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    #result {
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin-top: 20px;
+      min-height: 30px;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @media (max-width: 768px) {
+      .box { padding: 28px 20px; }
+      h2 { font-size: 1.8rem; }
+      #numbers { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="box">
+    <h2>🧠 Zihinden Toplama</h2>
+
+    <input type="number" id="digits" placeholder="Kaç basamaklı?" />
+    <button onclick="baslat()">Başla</button>
+
+    <div id="numbers"></div>
+
+    <input type="number" id="answer" placeholder="Sonucu yaz" style="display:none" />
+    <button id="checkBtn" onclick="kontrolEt()" style="display:none">Kontrol Et</button>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    let sayi1, sayi2;
+    function formatNumberWithDots(number) {
+      return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function rastgeleSayi(basamak) {
+      const min = Math.pow(10, basamak - 1);
+      const max = Math.pow(10, basamak) - 1;
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function baslat() {
+      const basamak = parseInt(document.getElementById("digits").value);
+      if (isNaN(basamak) || basamak < 1) {
+        alert("Geçerli bir basamak sayısı gir!");
+        return;
+      }
+
+      sayi1 = rastgeleSayi(basamak);
+      sayi2 = rastgeleSayi(basamak);
+
+      const numbersDiv = document.getElementById("numbers");
+      numbersDiv.innerHTML = `${formatNumberWithDots(sayi1)} <br> + <br> ${formatNumberWithDots(sayi2)}`;
+      numbersDiv.style.display = "block";
+
+      document.getElementById("answer").style.display = "block";
+      document.getElementById("checkBtn").style.display = "inline-block";
+      document.getElementById("result").innerText = "";
+    }
+
+    function kontrolEt() {
+      const cevap = parseInt(document.getElementById("answer").value);
+      const dogru = sayi1 + sayi2;
+
+      if (cevap === dogru) {
+        document.getElementById("result").innerText = "🎉 Tebrikler! Doğru cevap.";
+        document.getElementById("result").style.color = "green";
+      } else {
+        document.getElementById("result").innerText =
+          `❌ Yanlış. Doğru sonuç: ${formatNumberWithDots(dogru)}`;
+        document.getElementById("result").style.color = "red";
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Üslü Sayılar — Alıştırma</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#4f46e5;--muted:#94a3b8;--ok:#16a34a;--bad:#ef4444}
+    *{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial;background:linear-gradient(180deg,#0b1220 0%,#071221 100%);color:#e6eef8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .wrap{width:100%;max-width:860px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.03);padding:20px;border-radius:12px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px}
+    h1{margin:0;font-size:20px;color:var(--accent)}
+    .controls{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+    .field{background:rgba(255,255,255,0.02);padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    input[type=number],select{width:120px;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit}
+    button{padding:10px 12px;border-radius:8px;border:none;background:linear-gradient(90deg,var(--accent),#7c3aed);color:#fff;cursor:pointer;font-weight:700}
+    .stage{display:grid;grid-template-columns:1fr 260px;gap:18px;align-items:start}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:16px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+    .problem{display:flex;align-items:center;gap:14px;justify-content:center;flex-direction:column;padding:18px}
+    .expr{font-weight:900;font-size:56px;letter-spacing:0.02em}
+    .expr sup{font-size:28px;vertical-align:super;margin-left:6px}
+    .input-row{display:flex;gap:8px;align-items:center;margin-top:8px;width:100%;max-width:560px}
+    input.answer{flex:1;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.05);font-size:20px;background:transparent;color:inherit}
+    .feedback{width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800}
+    .feedback.ok{background:rgba(22,163,74,0.12);color:var(--ok);border:1px solid rgba(22,163,74,0.18)}
+    .feedback.bad{background:rgba(239,68,68,0.08);color:var(--bad);border:1px solid rgba(239,68,68,0.12)}
+    .hint{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
+    .stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .stat{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;min-width:110px;text-align:center}
+    .stat .num{font-size:20px;font-weight:800}
+    footer{margin-top:12px;display:flex;justify-content:space-between;align-items:center}
+    @media(max-width:860px){.stage{grid-template-columns:1fr}.expr{font-size:42px}.expr sup{font-size:20px}.controls{flex-direction:column;align-items:stretch}.field input{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Üslü Sayılar — Çalışma</h1>
+      <div class="controls">
+        <div class="field">
+          <label for="digits">Basamak sayısı</label>
+          <input id="digits" type="number" min="1" max="6" value="3">
+        </div>
+        <div class="field">
+          <label for="power">Kuvvet</label>
+          <input id="power" type="number" min="1" max="6" value="2">
+        </div>
+        <div class="field">
+          <label for="count">Soru sayısı</label>
+          <input id="count" type="number" min="1" max="500" value="20">
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <div style="display:flex;gap:8px">
+            <button id="startBtn">Başlat</button>
+            <button id="resetBtn" style="background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)">Sıfırla</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="stage">
+      <div class="panel">
+        <div class="problem">
+          <div class="expr" id="expression">— <sup id="exp">2</sup></div>
+          <div id="progress" class="small" style="color:var(--muted);margin-top:6px">Soru 0 / 0</div>
+
+          <div class="input-row">
+            <input id="answer" class="answer" inputmode="numeric" autocomplete="off" placeholder="Sonucu girin ve Enter'a basın">
+            <div id="feedback" class="feedback" aria-live="polite"></div>
+          </div>
+
+          <div class="hint">Doğruysa hemen yeşil tik — Enter ile cevapla. Yanlışsa kırmızı X gösterilir.</div>
+        </div>
+
+        <div class="stats" id="stats">
+          <div class="stat"><div class="small">Doğru</div><div class="num" id="correct">0</div></div>
+          <div class="stat"><div class="small">Yanlış</div><div class="num" id="wrong">0</div></div>
+          <div class="stat"><div class="small">Toplam</div><div class="num" id="total">0</div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div><strong>Talimat</strong><div style="color:var(--muted);font-size:13px;margin-top:6px">Her soruda rastgele bir sayının üssü gösterilecek. Sonucu kutucuğa yazıp Enter'a basın. Ardından yeni soru gelecektir. Basamak ve kuvvet ayarlarını başlatmadan önce değiştirin.</div></div>
+          <div style="margin-top:6px"><strong>Geçerli ayar</strong><div id="cfg" style="color:var(--muted);margin-top:6px">—</div></div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="prevBtn" style="flex:1;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)">Önceki</button>
+            <button id="nextBtn" style="flex:1">İleri</button>
+          </div>
+          <div style="margin-top:8px;color:var(--muted);font-size:13px">Not: Maksimum basamak ve kuvvet 6 ile sınırlandırıldı (tarayıcı performansı için).</div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div style="font-size:13px;color:var(--muted)">Klavye: <strong>Enter</strong>=Gönder • <strong>Space</strong>=Başlat</div>
+      <div style="font-size:13px;color:var(--muted)">Geliştirildi — hızlı hesaplama</div>
+    </footer>
+  </div>
+
+  <script>
+    // State
+    let digitsEl = document.getElementById('digits');
+    let powerEl = document.getElementById('power');
+    let countEl = document.getElementById('count');
+    let expressionEl = document.getElementById('expression');
+    let expEl = document.getElementById('exp');
+    let progressEl = document.getElementById('progress');
+    let answerEl = document.getElementById('answer');
+    let feedbackEl = document.getElementById('feedback');
+    let correctEl = document.getElementById('correct');
+    let wrongEl = document.getElementById('wrong');
+    let totalEl = document.getElementById('total');
+    let cfgEl = document.getElementById('cfg');
+
+    let startBtn = document.getElementById('startBtn');
+    let resetBtn = document.getElementById('resetBtn');
+    let prevBtn = document.getElementById('prevBtn');
+    let nextBtn = document.getElementById('nextBtn');
+
+    let currentBase = null;
+    let currentPower = 2;
+    let running = false;
+    let stats = {correct:0, wrong:0, total:0};
+    let autoSubmitTimer = null;
+    let shownCount = 0;
+    let maxQuestions = Number(countEl?.value || 20);
+
+    function sanitizeNumberString(s){
+      return s.replace(/[,_\s]/g,'');
+    }
+
+    function bigPow(base, exp){
+      // fast exponentiation with BigInt
+      let b = BigInt(base);
+      let e = BigInt(exp);
+      let res = 1n;
+      while (e > 0n){
+        if (e % 2n === 1n) res *= b;
+        b *= b;
+        e /= 2n;
+      }
+      return res;
+    }
+
+    function genBase(digits){
+      const d = Math.max(1, Math.min(6, Number(digits)));
+      if (d === 1) return Math.floor(Math.random()*10);
+      const min = Math.pow(10, d-1);
+      const max = Math.pow(10, d)-1;
+      return Math.floor(Math.random()*(max-min+1))+min;
+    }
+
+    function updateCfg(){
+      const cnt = Math.max(1, Math.min(500, Number(countEl.value || 20)));
+      cfgEl.textContent = `${digitsEl.value} basamak · kuvvet ${powerEl.value} · ${cnt} soru`;
+    }
+
+    function newProblem(){
+      if (!running) return;
+      if (shownCount >= maxQuestions) { finishSession(); return; }
+      shownCount++;
+      progressEl.textContent = `Soru ${shownCount} / ${maxQuestions}`;
+      currentBase = genBase(digitsEl.value);
+      currentPower = Math.max(1, Math.min(6, Number(powerEl.value)));
+      expressionEl.innerHTML = `${currentBase}<sup id=exp>${currentPower}</sup>`;
+      answerEl.value = '';
+      feedbackEl.textContent = '';
+      feedbackEl.className = 'feedback';
+      answerEl.focus();
+    }
+
+    function expectedAnswerStr(){
+      const res = bigPow(currentBase, currentPower);
+      return res.toString();
+    }
+
+    function checkLive(){
+      const val = sanitizeNumberString(answerEl.value);
+      if (!val) { feedbackEl.textContent = ''; feedbackEl.className = 'feedback'; return false; }
+      try{
+        const user = BigInt(val);
+        const ok = user.toString() === expectedAnswerStr();
+        feedbackEl.textContent = ok ? '✓' : '✖';
+        feedbackEl.className = ok ? 'feedback ok' : 'feedback bad';
+        return ok;
+      }catch(e){
+        feedbackEl.textContent = '✖';
+        feedbackEl.className = 'feedback bad';
+        return false;
+      }
+    }
+
+    function submitAnswer(){
+      if (!running) return;
+      clearTimeout(autoSubmitTimer);
+      const val = sanitizeNumberString(answerEl.value);
+      let correct = false;
+      try{
+        const user = BigInt(val);
+        correct = (user.toString() === expectedAnswerStr());
+      }catch(e){ correct = false; }
+
+      stats.total++;
+      if (correct) stats.correct++; else stats.wrong++;
+      updateStats();
+
+      // show short feedback then next
+      feedbackEl.textContent = correct ? '✓' : (`✖  ${expectedAnswerStr()}`);
+      feedbackEl.className = correct ? 'feedback ok' : 'feedback bad';
+
+      setTimeout(()=>{ newProblem(); }, 600);
+    }
+
+    function updateStats(){
+      correctEl.textContent = stats.correct;
+      wrongEl.textContent = stats.wrong;
+      totalEl.textContent = stats.total;
+    }
+
+    function finishSession(){
+      running = false;
+      startBtn.textContent = 'Başlat';
+      expressionEl.textContent = 'Tamamlandı';
+      cfgEl.textContent = `Tamamlandı — ${shownCount} soru gösterildi`;
+      progressEl.textContent = `Soru ${shownCount} / ${maxQuestions}`;
+      answerEl.blur();
+    }
+
+    // Events
+    startBtn.addEventListener('click', ()=>{
+      running = true;
+      stats = {correct:0, wrong:0, total:0};
+      shownCount = 0;
+      maxQuestions = Math.max(1, Math.min(500, Number(countEl.value || 20)));
+      updateStats(); updateCfg(); newProblem();
+      startBtn.textContent = 'Çalışıyor...';
+    });
+
+    resetBtn.addEventListener('click', ()=>{
+      running = false; startBtn.textContent = 'Başlat'; stats = {correct:0, wrong:0, total:0}; shownCount = 0; updateStats(); expressionEl.textContent='—'; feedbackEl.textContent=''; cfgEl.textContent='—'; progressEl.textContent = `Soru 0 / ${countEl.value || 0}`;
+    });
+
+    digitsEl.addEventListener('change', ()=>{ digitsEl.value = Math.max(1, Math.min(6, Number(digitsEl.value))); updateCfg(); });
+    powerEl.addEventListener('change', ()=>{ powerEl.value = Math.max(1, Math.min(6, Number(powerEl.value))); updateCfg(); });
+    countEl.addEventListener('change', ()=>{ countEl.value = Math.max(1, Math.min(500, Number(countEl.value))); updateCfg(); });
+
+    answerEl.addEventListener('input', ()=>{
+      // live check — if exactly correct, auto-submit shortly
+      const ok = checkLive();
+      if (ok){
+        clearTimeout(autoSubmitTimer);
+        autoSubmitTimer = setTimeout(()=>{ submitAnswer(); }, 350);
+      }
+    });
+
+    answerEl.addEventListener('keydown', (e)=>{
+      if (e.key === 'Enter'){
+        e.preventDefault(); submitAnswer();
+      }
+      if (e.code === 'Space'){
+        e.preventDefault(); // space = start/stop
+        if (!running) startBtn.click();
+      }
+    });
+
+    nextBtn.addEventListener('click', ()=>{ if (!running) return; newProblem(); });
+    prevBtn.addEventListener('click', ()=>{ /* placeholder - no history implemented yet */ newProblem(); });
+
+    // init
+    updateCfg();
+  </script>
+</body>
+</html>

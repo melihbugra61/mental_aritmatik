@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Stroop Test - Renk-Kelime Tepki Oyunu</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+      color: #fff; 
+      font-family: 'Segoe UI', Arial, sans-serif; 
+      min-height: 100vh; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      padding: 20px;
+    }
+    .container { 
+      background: rgba(255,255,255,0.95); 
+      border-radius: 20px; 
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3); 
+      padding: 40px 32px; 
+      max-width: 600px; 
+      width: 100%; 
+      text-align: center;
+      color: #1a1a2e;
+      animation: fadeIn 0.8s ease;
+    }
+    h1 { 
+      color: #4f46e5; 
+      font-size: 2rem; 
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+    .subtitle {
+      color: #64748b;
+      font-size: 0.95rem;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+    
+    /* Start Screen */
+    .start-screen, .game-screen, .result-screen { display: none; }
+    .start-screen.active, .game-screen.active, .result-screen.active { display: block; }
+    
+    .difficulty-selector {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .diff-btn {
+      padding: 14px 24px;
+      border: 2px solid #4f46e5;
+      background: white;
+      color: #4f46e5;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .diff-btn:hover {
+      background: #4f46e5;
+      color: white;
+      transform: translateY(-2px);
+    }
+    .diff-btn.selected {
+      background: #4f46e5;
+      color: white;
+    }
+    
+    .start-btn {
+      padding: 16px 48px;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .start-btn:hover {
+      transform: scale(1.05);
+    }
+    
+    /* Game Screen */
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      padding: 16px 20px;
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(124, 58, 237, 0.08));
+      border-radius: 12px;
+    }
+    .timer {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #4f46e5;
+    }
+    .score {
+      font-size: 1.1rem;
+      color: #64748b;
+    }
+    .score span {
+      font-weight: 700;
+      color: #16a34a;
+    }
+    .score .wrong {
+      color: #dc2626;
+    }
+    
+    .word-display {
+      min-height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 32px;
+      background: rgba(79, 70, 229, 0.05);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .word {
+      font-size: 4.5rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      transition: all 0.3s;
+      text-transform: uppercase;
+    }
+    
+    .instruction {
+      font-size: 1.1rem;
+      color: #64748b;
+      margin-bottom: 24px;
+      padding: 12px;
+      background: #fff3cd;
+      border-radius: 10px;
+      font-weight: 500;
+    }
+    
+    .color-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .color-btn {
+      padding: 18px 24px;
+      border: 3px solid;
+      background: white;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .color-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    }
+    .color-btn:active {
+      transform: translateY(0);
+    }
+    
+    .color-btn.red { border-color: #dc2626; color: #dc2626; }
+    .color-btn.blue { border-color: #2563eb; color: #2563eb; }
+    .color-btn.green { border-color: #16a34a; color: #16a34a; }
+    .color-btn.yellow { border-color: #eab308; color: #eab308; }
+    .color-btn.purple { border-color: #9333ea; color: #9333ea; }
+    .color-btn.orange { border-color: #ea580c; color: #ea580c; }
+    .color-btn.pink { border-color: #ec4899; color: #ec4899; }
+    .color-btn.brown { border-color: #92400e; color: #92400e; }
+    
+    .feedback {
+      font-size: 1.3rem;
+      font-weight: 700;
+      min-height: 32px;
+      margin-bottom: 16px;
+    }
+    .feedback.correct { color: #16a34a; }
+    .feedback.wrong { color: #dc2626; }
+    
+    .keyboard-hint {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-top: 12px;
+    }
+    
+    /* Result Screen */
+    .result-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 28px 0;
+    }
+    .stat-card {
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(124, 58, 237, 0.08));
+      border-radius: 12px;
+      border: 2px solid rgba(79, 70, 229, 0.2);
+    }
+    .stat-label {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    .stat-value {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #4f46e5;
+    }
+    .stat-value.success { color: #16a34a; }
+    .stat-value.danger { color: #dc2626; }
+    
+    .accuracy {
+      font-size: 3rem;
+      font-weight: 900;
+      color: #4f46e5;
+      margin: 20px 0;
+    }
+    
+    .message {
+      font-size: 1.2rem;
+      color: #64748b;
+      margin-bottom: 28px;
+      font-weight: 500;
+    }
+    
+    .restart-btn {
+      padding: 14px 40px;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .restart-btn:hover {
+      transform: scale(1.05);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @media (max-width: 600px) {
+      .container { padding: 24px 16px; }
+      h1 { font-size: 1.5rem; }
+      .word { font-size: 3rem; }
+      .color-buttons { grid-template-columns: 1fr; }
+      .game-header { flex-direction: column; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Start Screen -->
+    <div class="start-screen active" id="startScreen">
+      <h1>🎨 Stroop Test Oyunu</h1>
+      <p class="subtitle">
+        Ekranda gördüğünüz <strong>kelimenin rengini</strong> seçin, kelimeyi değil!<br>
+        Bu zihinsel bir zorluktur - dikkatin ve tepki hızını test eder.
+      </p>
+      
+      <div class="difficulty-selector">
+        <button class="diff-btn selected" data-level="easy">
+          <div>😊 Kolay</div>
+          <div style="font-size:0.8rem;margin-top:4px">4 Renk - 90sn</div>
+        </button>
+        <button class="diff-btn" data-level="medium">
+          <div>🤔 Orta</div>
+          <div style="font-size:0.8rem;margin-top:4px">6 Renk - 75sn</div>
+        </button>
+        <button class="diff-btn" data-level="hard">
+          <div>😰 Zor</div>
+          <div style="font-size:0.8rem;margin-top:4px">8 Renk - 60sn</div>
+        </button>
+      </div>
+      
+      <button class="start-btn" onclick="startGame()">OYUNA BAŞLA</button>
+    </div>
+    
+    <!-- Game Screen -->
+    <div class="game-screen" id="gameScreen">
+      <div class="game-header">
+        <div class="timer" id="timer">90</div>
+        <div class="score">
+          Doğru: <span id="correct">0</span> | 
+          Yanlış: <span class="wrong" id="wrong">0</span>
+        </div>
+      </div>
+      
+      <div class="instruction">
+        ⚠️ Yazının <strong>rengini</strong> seçin, kelimeyi değil!
+      </div>
+      
+      <div class="word-display">
+        <div class="word" id="word">HAZIR</div>
+      </div>
+      
+      <div class="feedback" id="feedback"></div>
+      
+      <div class="color-buttons" id="colorButtons"></div>
+      
+      <div class="keyboard-hint" id="keyboardHint"></div>
+    </div>
+    
+    <!-- Result Screen -->
+    <div class="result-screen" id="resultScreen">
+      <h1>🎉 Oyun Bitti!</h1>
+      
+      <div class="accuracy" id="accuracy">0%</div>
+      <div class="message" id="performanceMsg"></div>
+      
+      <div class="result-stats">
+        <div class="stat-card">
+          <div class="stat-label">Toplam Deneme</div>
+          <div class="stat-value" id="totalAttempts">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Doğru Cevap</div>
+          <div class="stat-value success" id="finalCorrect">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Yanlış Cevap</div>
+          <div class="stat-value danger" id="finalWrong">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Ortalama Süre</div>
+          <div class="stat-value" id="avgTime">0.0s</div>
+        </div>
+      </div>
+      
+      <button class="restart-btn" onclick="restart()">YENİDEN OYNA</button>
+    </div>
+  </div>
+
+  <script>
+    const colors = {
+      easy: [
+        { name: 'KIRMIZI', key: 'K', colorCode: '#dc2626', class: 'red' },
+        { name: 'MAVİ', key: 'M', colorCode: '#2563eb', class: 'blue' },
+        { name: 'YEŞİL', key: 'Y', colorCode: '#16a34a', class: 'green' },
+        { name: 'SARI', key: 'S', colorCode: '#eab308', class: 'yellow' }
+      ],
+      medium: [
+        { name: 'KIRMIZI', key: 'K', colorCode: '#dc2626', class: 'red' },
+        { name: 'MAVİ', key: 'M', colorCode: '#2563eb', class: 'blue' },
+        { name: 'YEŞİL', key: 'Y', colorCode: '#16a34a', class: 'green' },
+        { name: 'SARI', key: 'S', colorCode: '#eab308', class: 'yellow' },
+        { name: 'MOR', key: 'O', colorCode: '#9333ea', class: 'purple' },
+        { name: 'TURUNCU', key: 'T', colorCode: '#ea580c', class: 'orange' }
+      ],
+      hard: [
+        { name: 'KIRMIZI', key: 'K', colorCode: '#dc2626', class: 'red' },
+        { name: 'MAVİ', key: 'M', colorCode: '#2563eb', class: 'blue' },
+        { name: 'YEŞİL', key: 'Y', colorCode: '#16a34a', class: 'green' },
+        { name: 'SARI', key: 'S', colorCode: '#eab308', class: 'yellow' },
+        { name: 'MOR', key: 'O', colorCode: '#9333ea', class: 'purple' },
+        { name: 'TURUNCU', key: 'T', colorCode: '#ea580c', class: 'orange' },
+        { name: 'PEMBE', key: 'P', colorCode: '#ec4899', class: 'pink' },
+        { name: 'KAHVERENGİ', key: 'H', colorCode: '#92400e', class: 'brown' }
+      ]
+    };
+
+    let currentLevel = 'easy';
+    let currentColors = colors.easy;
+    let currentWord = null;
+    let currentColor = null;
+    let timeLeft = 90;
+    let correctCount = 0;
+    let wrongCount = 0;
+    let gameTimer = null;
+    let startTime = 0;
+    let responseTimes = [];
+    let isPlaying = false;
+
+    // Difficulty selection
+    document.querySelectorAll('.diff-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
+        this.classList.add('selected');
+        currentLevel = this.dataset.level;
+        currentColors = colors[currentLevel];
+      });
+    });
+
+    function startGame() {
+      // Reset
+      correctCount = 0;
+      wrongCount = 0;
+      responseTimes = [];
+      currentColors = colors[currentLevel];
+      
+      // Set time based on difficulty
+      if (currentLevel === 'easy') timeLeft = 90;
+      else if (currentLevel === 'medium') timeLeft = 75;
+      else timeLeft = 60;
+      
+      isPlaying = true;
+      
+      // Show game screen
+      document.getElementById('startScreen').classList.remove('active');
+      document.getElementById('gameScreen').classList.add('active');
+      
+      // Update UI
+      document.getElementById('timer').textContent = timeLeft;
+      document.getElementById('correct').textContent = correctCount;
+      document.getElementById('wrong').textContent = wrongCount;
+      
+      // Create color buttons
+      createColorButtons();
+      
+      // Start timer
+      gameTimer = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').textContent = timeLeft;
+        
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+      
+      // Show first word
+      setTimeout(() => nextWord(), 500);
+    }
+
+    function createColorButtons() {
+      const container = document.getElementById('colorButtons');
+      const hintContainer = document.getElementById('keyboardHint');
+      container.innerHTML = '';
+      
+      let hints = [];
+      currentColors.forEach(color => {
+        const btn = document.createElement('button');
+        btn.className = `color-btn ${color.class}`;
+        btn.innerHTML = `<span>${color.name}</span><span style="opacity:0.6">(${color.key})</span>`;
+        btn.onclick = () => checkAnswer(color.name);
+        container.appendChild(btn);
+        hints.push(`${color.key}=${color.name}`);
+      });
+      
+      hintContainer.textContent = `Klavye kısayolları: ${hints.join(', ')}`;
+    }
+
+    function nextWord() {
+      if (!isPlaying) return;
+      
+      // Random word and random color (make sure they're different for challenge)
+      const wordObj = currentColors[Math.floor(Math.random() * currentColors.length)];
+      let colorObj = currentColors[Math.floor(Math.random() * currentColors.length)];
+      
+      // Ensure word and color are different (Stroop effect)
+      while (wordObj.name === colorObj.name) {
+        colorObj = currentColors[Math.floor(Math.random() * currentColors.length)];
+      }
+      
+      currentWord = wordObj.name;
+      currentColor = colorObj.name;
+      
+      const wordEl = document.getElementById('word');
+      wordEl.textContent = currentWord;
+      wordEl.style.color = colorObj.colorCode;
+      
+      document.getElementById('feedback').textContent = '';
+      
+      startTime = Date.now();
+    }
+
+    function checkAnswer(selectedColor) {
+      if (!isPlaying) return;
+      
+      const responseTime = (Date.now() - startTime) / 1000;
+      responseTimes.push(responseTime);
+      
+      const feedbackEl = document.getElementById('feedback');
+      
+      if (selectedColor === currentColor) {
+        correctCount++;
+        feedbackEl.textContent = '✓ Doğru!';
+        feedbackEl.className = 'feedback correct';
+        document.getElementById('correct').textContent = correctCount;
+      } else {
+        wrongCount++;
+        feedbackEl.textContent = `✗ Yanlış! (Doğru: ${currentColor})`;
+        feedbackEl.className = 'feedback wrong';
+        document.getElementById('wrong').textContent = wrongCount;
+      }
+      
+      setTimeout(nextWord, 800);
+    }
+
+    function endGame() {
+      isPlaying = false;
+      clearInterval(gameTimer);
+      
+      // Calculate stats
+      const total = correctCount + wrongCount;
+      const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+      const avgTime = responseTimes.length > 0 
+        ? (responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length).toFixed(2)
+        : 0;
+      
+      // Show result screen
+      document.getElementById('gameScreen').classList.remove('active');
+      document.getElementById('resultScreen').classList.add('active');
+      
+      // Update results
+      document.getElementById('accuracy').textContent = accuracy + '%';
+      document.getElementById('totalAttempts').textContent = total;
+      document.getElementById('finalCorrect').textContent = correctCount;
+      document.getElementById('finalWrong').textContent = wrongCount;
+      document.getElementById('avgTime').textContent = avgTime + 's';
+      
+      // Performance message
+      const msgEl = document.getElementById('performanceMsg');
+      if (accuracy >= 90) {
+        msgEl.textContent = '🏆 Mükemmel! Dikkat seviyen harika!';
+      } else if (accuracy >= 75) {
+        msgEl.textContent = '👏 Çok iyi! Güçlü bir performans!';
+      } else if (accuracy >= 60) {
+        msgEl.textContent = '👍 İyi! Pratikle daha iyi olabilirsin!';
+      } else {
+        msgEl.textContent = '💪 Devam et! Her deneme seni geliştirir!';
+      }
+    }
+
+    function restart() {
+      document.getElementById('resultScreen').classList.remove('active');
+      document.getElementById('startScreen').classList.add('active');
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (!isPlaying) return;
+      
+      const key = e.key.toUpperCase();
+      const color = currentColors.find(c => c.key === key);
+      
+      if (color) {
+        e.preventDefault();
+        checkAnswer(color.name);
+      }
+    });
+  </script>
+</body>
+</html>

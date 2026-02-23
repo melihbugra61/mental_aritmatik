@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hızlı Matematik</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+      color: #fff;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      padding: 40px 32px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      animation: fadeIn 0.8s ease;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 32px;
+      background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    label {
+      display: block;
+      font-size: 1rem;
+      color: #e0e7ff;
+      margin-top: 16px;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    input {
+      padding: 12px;
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+      width: 100%;
+      max-width: 200px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      text-align: center;
+      font-weight: 600;
+    }
+    input:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.15);
+    }
+    button {
+      padding: 14px 48px;
+      margin-top: 24px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: #fff;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    #number {
+      font-size: 5rem;
+      font-weight: 900;
+      margin: 40px 0;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @media (max-width: 768px) {
+      .container { padding: 28px 20px; }
+      h1 { font-size: 1.6rem; }
+      #number { font-size: 4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🧠 Arka Arkaya Zihinden Toplama</h1>
+
+    <label>Kaç sayı gösterilsin?</label>
+    <input type="number" id="count" value="5">
+
+    <label>Kaç saniyede bir?</label>
+    <input type="number" id="interval" value="1">
+
+    <button onclick="startGame()">Başla</button>
+
+    <div id="number"></div>
+  </div>
+
+  <script>
+    let numbers = []
+    let index = 0
+    let total = 0
+    let timer
+
+    function startGame() {
+      numbers = []
+      index = 0
+      total = 0
+
+      const count = Number(document.getElementById("count").value)
+      const interval = Number(document.getElementById("interval").value) * 1000
+
+      // Rastgele sayılar üret
+      for (let i = 0; i < count; i++) {
+        const n = Math.floor(Math.random() * 99) + 1
+        numbers.push(n)
+        total += n
+      }
+
+      timer = setInterval(showNumber, interval)
+    }
+
+    function showNumber() {
+      if (index < numbers.length) {
+        document.getElementById("number").innerText = numbers[index]
+        index++
+      } else {
+        clearInterval(timer)
+        document.getElementById("number").innerText = ""
+
+        const answer = prompt("Toplam kaç?")
+        if (Number(answer) === total) {
+          alert("🎉 Doğru! Tebrikler")
+        } else {
+          alert("❌ Yanlış! Doğru cevap: " + total)
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>

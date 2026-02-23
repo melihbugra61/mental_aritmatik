@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Köklü Sayılar — Alıştırma</title>
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:'Segoe UI',Arial,sans-serif;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+      color:#e6eef8;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px
+    }
+    .wrap{
+      width:100%;
+      max-width:900px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding:32px;
+      border-radius:20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 0.8s ease;
+    }
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+    h1{
+      margin:0;
+      font-size:1.8rem;
+      font-weight:700;
+      background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .controls{display:flex;gap:12px;align-items:end;flex-wrap:wrap}
+    .field{background:rgba(255,255,255,0.05);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.1)}
+    label{display:block;font-size:0.9rem;color:#e0e7ff;margin-bottom:8px;font-weight:500}
+    input[type=number],select{
+      width:140px;
+      padding:10px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,0.2);
+      background:rgba(255,255,255,0.1);
+      color:#fff;
+      font-weight:600;
+    }
+    input[type=number]:focus,select:focus{
+      outline:none;
+      border-color:rgba(255,255,255,0.4);
+      background:rgba(255,255,255,0.15);
+    }
+    button{
+      padding:12px 24px;
+      border-radius:12px;
+      border:none;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color:#fff;
+      cursor:pointer;
+      font-weight:700;
+      font-size:1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+    }
+    button:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+    }
+    .stage{display:grid;grid-template-columns:1fr 280px;gap:24px;align-items:start}
+    .panel{background:rgba(255,255,255,0.05);padding:24px;border-radius:16px;border:1px solid rgba(255,255,255,0.1)}
+    .problem{display:flex;align-items:center;gap:16px;justify-content:center;flex-direction:column;padding:24px}
+    .expr{font-weight:900;font-size:3.5rem;letter-spacing:0.02em;color:#fff}
+    .expr sup{font-size:1.8rem;vertical-align:super;margin-left:6px}
+    .expr .radical{font-size:2.5rem;vertical-align:middle;margin-right:6px}
+    .input-row{display:flex;gap:12px;align-items:center;margin-top:16px;width:100%;max-width:600px}
+    input.answer{
+      flex:1;
+      padding:14px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.2);
+      font-size:1.3rem;
+      background:rgba(255,255,255,0.1);
+      color:#fff;
+      font-weight:600;
+      text-align:center;
+    }
+    input.answer:focus{
+      outline:none;
+      border-color:rgba(255,255,255,0.4);
+      background:rgba(255,255,255,0.15);
+    }
+    .feedback{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:800}
+    .feedback.ok{background:rgba(22,163,74,0.2);color:#4ade80;border:2px solid rgba(34,197,94,0.4)}
+    .feedback.bad{background:rgba(239,68,68,0.2);color:#f87171;border:2px solid rgba(239,68,68,0.4)}
+    .hint{font-size:0.85rem;color:#e0e7ff;margin-top:12px;text-align:center}
+    .stats{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+    .stat{background:rgba(255,255,255,0.05);padding:16px;border-radius:12px;min-width:120px;text-align:center;border:1px solid rgba(255,255,255,0.1)}
+    .stat .num{font-size:1.8rem;font-weight:800;color:#fff}
+    .stat .label{font-size:0.85rem;color:#e0e7ff;margin-top:4px}
+    footer{margin-top:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @media(max-width:860px){.stage{grid-template-columns:1fr}.expr{font-size:2.8rem}.expr sup{font-size:1.4rem}.controls{flex-direction:column;align-items:stretch}.field{width:100%}.field input,.field select{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Köklü Sayılar — Çalışma</h1>
+      <div class="controls">
+        <div class="field">
+          <label for="digits">Basamak sayısı</label>
+          <input id="digits" type="number" min="1" max="6" value="3">
+        </div>
+        <div class="field">
+          <label for="root">Kök derecesi</label>
+          <input id="root" type="number" min="2" max="6" value="2">
+        </div>
+        <div class="field">
+          <label for="count">Soru sayısı</label>
+          <input id="count" type="number" min="1" max="500" value="20">
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <div style="display:flex;gap:8px">
+            <button id="startBtn">Başlat</button>
+            <button id="resetBtn" style="background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)">Sıfırla</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="stage">
+      <div class="panel">
+        <div class="problem">
+          <div class="expr" id="expression"><span class="radical">√</span>—</div>
+          <div id="progress" class="small" style="color:var(--muted);margin-top:6px">Soru 0 / 0</div>
+
+          <div class="input-row">
+            <input id="answer" class="answer" inputmode="numeric" autocomplete="off" placeholder="Sonucu girin ve Enter'a basın">
+            <div id="feedback" class="feedback" aria-live="polite"></div>
+          </div>
+
+          <div class="hint">Doğruysa hemen yeşil tik — Enter ile cevapla. Yanlışsa kırmızı X gösterilir.</div>
+        </div>
+
+        <div class="stats" id="stats">
+          <div class="stat"><div class="small">Doğru</div><div class="num" id="correct">0</div></div>
+          <div class="stat"><div class="small">Yanlış</div><div class="num" id="wrong">0</div></div>
+          <div class="stat"><div class="small">Toplam</div><div class="num" id="total">0</div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div><strong>Talimat</strong><div style="color:var(--muted);font-size:13px;margin-top:6px">Her soruda rastgele bir köklü sayı gösterilecek. Sonucu kutucuğa yazıp Enter'a basın. Ardından yeni soru gelecektir. Basamak ve kök derecesi ayarlarını başlatmadan önce değiştirin.</div></div>
+          <div style="margin-top:6px"><strong>Geçerli ayar</strong><div id="cfg" style="color:var(--muted);margin-top:6px">—</div></div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="prevBtn" style="flex:1;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)">Önceki</button>
+            <button id="nextBtn" style="flex:1">İleri</button>
+          </div>
+          <div style="margin-top:8px;color:var(--muted);font-size:13px">Not: Maksimum basamak ve kök derecesi 6 ile sınırlandırıldı (tarayıcı performansı için).</div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div style="font-size:13px;color:var(--muted)">Klavye: <strong>Enter</strong>=Gönder • <strong>Space</strong>=Başlat</div>
+      <div style="font-size:13px;color:var(--muted)">Geliştirildi — hızlı hesaplama</div>
+    </footer>
+  </div>
+
+  <script>
+    // State
+    let digitsEl = document.getElementById('digits');
+    let rootEl = document.getElementById('root');
+    let countEl = document.getElementById('count');
+    let expressionEl = document.getElementById('expression');
+    let progressEl = document.getElementById('progress');
+    let answerEl = document.getElementById('answer');
+    let feedbackEl = document.getElementById('feedback');
+    let correctEl = document.getElementById('correct');
+    let wrongEl = document.getElementById('wrong');
+    let totalEl = document.getElementById('total');
+    let cfgEl = document.getElementById('cfg');
+
+    let startBtn = document.getElementById('startBtn');
+    let resetBtn = document.getElementById('resetBtn');
+    let prevBtn = document.getElementById('prevBtn');
+    let nextBtn = document.getElementById('nextBtn');
+
+    let currentBase = null;
+    let currentRoot = 2;
+    let running = false;
+    let stats = {correct:0, wrong:0, total:0};
+    let autoSubmitTimer = null;
+    let shownCount = 0;
+    let maxQuestions = Number(countEl?.value || 20);
+
+    function sanitizeNumberString(s){
+      return s.replace(/[,_\s]/g,'');
+    }
+
+    function bigPow(base, exp){
+      // fast exponentiation with BigInt
+      let b = BigInt(base);
+      let e = BigInt(exp);
+      let res = 1n;
+      while (e > 0n){
+        if (e % 2n === 1n) res *= b;
+        b *= b;
+        e /= 2n;
+      }
+      return res;
+    }
+
+    function genBase(digits){
+      const d = Math.max(1, Math.min(6, Number(digits)));
+      if (d === 1) return Math.floor(Math.random()*10);
+      const min = Math.pow(10, d-1);
+      const max = Math.pow(10, d)-1;
+      return Math.floor(Math.random()*(max-min+1))+min;
+    }
+
+    function updateCfg(){
+      const cnt = Math.max(1, Math.min(500, Number(countEl.value || 20)));
+      cfgEl.textContent = `${digitsEl.value} basamak · kök ${rootEl.value} · ${cnt} soru`;
+    }
+
+    function newProblem(){
+      if (!running) return;
+      if (shownCount >= maxQuestions) { finishSession(); return; }
+      shownCount++;
+      progressEl.textContent = `Soru ${shownCount} / ${maxQuestions}`;
+      currentRoot = Math.max(2, Math.min(6, Number(rootEl.value)));
+      // Rastgele bir tam sayı üret, sonra kökünü alacağımız sayıyı oluştur
+      const answer = genBase(digitsEl.value);
+      currentBase = bigPow(answer, currentRoot);
+      newProblem.expectedAnswer = answer;
+      expressionEl.innerHTML = `<span class="radical">&#8730;<sup style='font-size:18px;vertical-align:super'>${currentRoot}</sup></span>${currentBase}`;
+      answerEl.value = '';
+      feedbackEl.textContent = '';
+      feedbackEl.className = 'feedback';
+      answerEl.focus();
+    }
+
+    function expectedAnswerStr(){
+      return newProblem.expectedAnswer.toString();
+    }
+
+    function checkLive(){
+      const val = sanitizeNumberString(answerEl.value);
+      if (!val) { feedbackEl.textContent = ''; feedbackEl.className = 'feedback'; return false; }
+      // Sadece tam kısmı kontrol et
+      try{
+        const user = parseInt(val, 10);
+        const ok = user === newProblem.expectedAnswer;
+        feedbackEl.textContent = ok ? '✓' : '✖';
+        feedbackEl.className = ok ? 'feedback ok' : 'feedback bad';
+        return ok;
+      }catch(e){
+        feedbackEl.textContent = '✖';
+        feedbackEl.className = 'feedback bad';
+        return false;
+      }
+    }
+
+    function submitAnswer(){
+      if (!running) return;
+      clearTimeout(autoSubmitTimer);
+      const val = sanitizeNumberString(answerEl.value);
+      let correct = false;
+      try{
+        const user = parseInt(val, 10);
+        correct = (user === newProblem.expectedAnswer);
+      }catch(e){ correct = false; }
+
+      stats.total++;
+      if (correct) stats.correct++; else stats.wrong++;
+      updateStats();
+
+      // show short feedback then next
+      feedbackEl.textContent = correct ? '✓' : (`✖  ${newProblem.expectedAnswer}  (Tam kısmı)`);
+      feedbackEl.className = correct ? 'feedback ok' : 'feedback bad';
+
+      setTimeout(()=>{ newProblem(); }, 600);
+    }
+
+    function updateStats(){
+      correctEl.textContent = stats.correct;
+      wrongEl.textContent = stats.wrong;
+      totalEl.textContent = stats.total;
+    }
+
+    function finishSession(){
+      running = false;
+      startBtn.textContent = 'Başlat';
+      expressionEl.textContent = 'Tamamlandı';
+      cfgEl.textContent = `Tamamlandı — ${shownCount} soru gösterildi`;
+      progressEl.textContent = `Soru ${shownCount} / ${maxQuestions}`;
+      answerEl.blur();
+    }
+
+    // Events
+    startBtn.addEventListener('click', ()=>{
+      running = true;
+      stats = {correct:0, wrong:0, total:0};
+      shownCount = 0;
+      maxQuestions = Math.max(1, Math.min(500, Number(countEl.value || 20)));
+      updateStats(); updateCfg(); newProblem();
+      startBtn.textContent = 'Çalışıyor...';
+    });
+
+    resetBtn.addEventListener('click', ()=>{
+      running = false; startBtn.textContent = 'Başlat'; stats = {correct:0, wrong:0, total:0}; shownCount = 0; updateStats(); expressionEl.textContent='—'; feedbackEl.textContent=''; cfgEl.textContent='—'; progressEl.textContent = `Soru 0 / ${countEl.value || 0}`;
+    });
+
+    digitsEl.addEventListener('change', ()=>{ digitsEl.value = Math.max(1, Math.min(6, Number(digitsEl.value))); updateCfg(); });
+    rootEl.addEventListener('change', ()=>{ rootEl.value = Math.max(2, Math.min(6, Number(rootEl.value))); updateCfg(); });
+    countEl.addEventListener('change', ()=>{ countEl.value = Math.max(1, Math.min(500, Number(countEl.value))); updateCfg(); });
+
+    answerEl.addEventListener('input', ()=>{
+      // live check — if exactly correct, auto-submit shortly
+      const ok = checkLive();
+      if (ok){
+        clearTimeout(autoSubmitTimer);
+        autoSubmitTimer = setTimeout(()=>{ submitAnswer(); }, 350);
+      }
+    });
+
+    answerEl.addEventListener('keydown', (e)=>{
+      if (e.key === 'Enter'){
+        e.preventDefault(); submitAnswer();
+      }
+      if (e.code === 'Space'){
+        e.preventDefault(); // space = start/stop
+        if (!running) startBtn.click();
+      }
+    });
+
+    nextBtn.addEventListener('click', ()=>{ if (!running) return; newProblem(); });
+    prevBtn.addEventListener('click', ()=>{ /* placeholder - no history implemented yet */ newProblem(); });
+
+    // init
+    updateCfg();
+  </script>
+</body>
+</html>

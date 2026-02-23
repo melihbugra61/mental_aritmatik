@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Zihinsel Antrenman Oyunları</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+      color: #fff; 
+      font-family: 'Segoe UI', Arial, sans-serif; 
+      min-height: 100vh; 
+      padding: 40px 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+      animation: fadeInDown 0.8s ease;
+    }
+    h1 {
+      font-size: 3rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .subtitle {
+      font-size: 1.2rem;
+      color: #e0e7ff;
+      font-weight: 300;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+    
+    .game-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 28px 24px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: white;
+      display: block;
+      position: relative;
+      overflow: hidden;
+      animation: fadeInUp 0.8s ease backwards;
+    }
+    
+    .game-card:nth-child(1) { animation-delay: 0.1s; }
+    .game-card:nth-child(2) { animation-delay: 0.2s; }
+    .game-card:nth-child(3) { animation-delay: 0.3s; }
+    .game-card:nth-child(4) { animation-delay: 0.4s; }
+    .game-card:nth-child(5) { animation-delay: 0.5s; }
+    .game-card:nth-child(6) { animation-delay: 0.6s; }
+    .game-card:nth-child(7) { animation-delay: 0.7s; }
+    .game-card:nth-child(8) { animation-delay: 0.8s; }
+    
+    .game-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .game-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    
+    .game-card:hover::before {
+      opacity: 1;
+    }
+    
+    .game-icon {
+      font-size: 3.5rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+    
+    .game-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+    
+    .game-description {
+      font-size: 0.95rem;
+      color: #e0e7ff;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    
+    .game-meta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    
+    .badge {
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .badge.difficulty-1 { background: rgba(34, 197, 94, 0.25); color: #86efac; }
+    .badge.difficulty-2 { background: rgba(251, 191, 36, 0.25); color: #fcd34d; }
+    .badge.difficulty-3 { background: rgba(239, 68, 68, 0.25); color: #fca5a5; }
+    
+    .footer {
+      text-align: center;
+      padding: 32px 20px;
+      color: #e0e7ff;
+      font-size: 0.9rem;
+    }
+    
+    .stats-bar {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 20px;
+      animation: fadeIn 1s ease;
+    }
+    
+    .stat-item {
+      text-align: center;
+    }
+    
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #fff;
+      display: block;
+    }
+    
+    .stat-label {
+      font-size: 0.85rem;
+      color: #e0e7ff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+    
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @media (max-width: 768px) {
+      h1 { font-size: 2rem; }
+      .subtitle { font-size: 1rem; }
+      .games-grid { grid-template-columns: 1fr; }
+      .game-card { padding: 20px; }
+      .game-icon { font-size: 2.5rem; }
+      .game-title { font-size: 1.3rem; }
+      .stat-number { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🧠 Zihinsel Antrenman Merkezi</h1>
+      <p class="subtitle">Zihinsel performansını geliştir, becerilerini test et</p>
+    </div>
+    
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-number">8</span>
+        <span class="stat-label">Oyun</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">∞</span>
+        <span class="stat-label">Pratik</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">100%</span>
+        <span class="stat-label">Ücretsiz</span>
+      </div>
+    </div>
+    
+    <div class="games-grid">
+      <!-- N-Back -->
+      <a href="n-back.html" class="game-card">
+        <span class="game-icon">🔢</span>
+        <h2 class="game-title">N-Back Sayı Oyunu</h2>
+        <p class="game-description">
+          Çalışma belleğini geliştir! Ekranda gösterilen sayıları hatırla ve 2 öncekiyle aynı olup olmadığını tespit et.
+        </p>
+        <div class="game-meta">
+          <span class="badge difficulty-2">Orta</span>
+          <span class="badge">Hafıza</span>
+          <span class="badge">Konsantrasyon</span>
+        </div>
+      </a>
+      
+      <!-- Flash Anzan -->
+      <a href="flash_anzan.html" class="game-card">
+        <span class="game-icon">⚡</span>
+        <h2 class="game-title">Flash Anzan</h2>
+        <p class="game-description">
+          Hızlı zihinsel toplama! Ekranda sırayla gösterilen sayıları topla. Mental aritmetik hızını test et.
+        </p>
+        <div class="game-meta">
+          <span class="badge difficulty-3">Zor</span>
+          <span class="badge">Hız</span>
+          <span class="badge">Toplama</span>
+        </div>
+      </a>
+      
+      <!-- Zihinsel Çarpma -->
+      <a href="zihinsel_takvim.html" class="game-card">
+        <span class="game-icon">✖️</span>
+        <h2 class="game-title">Zihinsel Takvim</h2>
+        <p class="game-description">
+          Çarpma yarışması! Büyük sayıları zihinsel olarak çarp ve skorunu yükselt. Zamana karşı yarış!
+        </p>
+        <div class="game-meta">
+          <span class="badge difficulty-3">Zor</span>
+          <span class="badge">Çarpma</span>
+          <span class="badge">Yarışma</span>
+        </div>
+      </a>
+      
+      <!-- Math Mantık Quiz -->
+      <a href="zihinden_carpma.html" class="game-card">
+        <span class="game-icon">🧮</span>
+        <h2 class="game-title">Zihinden Çarpma</h2>
+        <p class="game-description">
+          Karışık sorular! Matematik ve mantık sorularını çöz. Her soru farklı bir zorluk sunar.
+        </p>
+        <div class="game-meta">
+          <span class="badge difficulty-2">Orta</span>
+          <span class="badge">Mantık</span>
+          <span class="badge">Matematik</span>
+        </div>
+      </a>
+      
+      <!-- Stroop Test -->
+      <a href="renkbilme.html" class="game-card">
+        <span class="game-icon">🎨</span>
+        <h2 class="game-title">Stroop Test</h2>
+        <p class="game-description">
+          Renk-kelime uyumsuzluğu! Yazının rengini seç, kelimeyi değil. Dikkat kontrolünü ve tepki hızını test et.
+        </p>
+        <div class="game-meta">
+          <span class="badge difficulty-2">Orta</span>
+          <span class="badge">Dikkat</span>
+          <span class="badge">Tepki Hızı</span>
+        </div>
+      </a>
+      
+      <!-- Köklu Sayılar -->
+      <a href="koklusayilar.html" class="game-card">
+        <span class="game-icon">√</span>
+        <h2 class="game-title">Köklu Sayılar</h2>
+        <p class="game-description">
+          Karekök hesaplama! Sayıların kareköklerini bul ve zihinsel tahmin yeteneğini geliştir.
+        </p>
+        <div class="game-meta">
+          <span class="badge difficulty-2">Orta</span>
+          <span class="badge">Karekök</span>
+          <span class="badge">Tahmin</span>
+        </div>
+      </a>
+      
+      <!-- Üslü Sayılar -->
+      <a href="uslusayilar.html" class="game-card">
+        <span class="game-icon">²</span>
+        <h2 class="game-title">Üslü Sayılar</h2>
+        <p class="game-description">
+          Üs hesaplama! Sayıların kuvvetlerini hesapla ve üs kurallarını pekiştir.
+        </p>
+        <div class="game-meta">
+          <span class="badge difficulty-2">Orta</span>
+          <span class="badge">Üs</span>
+          <span class="badge">Kuvvet</span>
+        </div>
+      </a>
+      
+      <!-- Geriye Doğru Say -->
+      <a href="gerigerisayma.html" class="game-card">
+        <span class="game-icon">🔽</span>
+        <h2 class="game-title">Geriye Doğru Say</h2>
+        <p class="game-description">
+          Ters sayma egzersizi! Belirlenen sayıdan geriye doğru say. Konsantrasyon ve tempo kontrolü.
+        </p>
+        <div class="game-meta">
+          <span class="badge difficulty-1">Kolay</span>
+          <span class="badge">Sayma</span>
+          <span class="badge">Tempo</span>
+        </div>
+      </a>
+
+      <!-- Geriye Doğru Say -->
+      <a href="sudoku.html" class="game-card">
+        <span class="game-icon">🔽</span>
+        <h2 class="game-title">Sudoku Oyna</h2>
+        <p class="game-description">
+          Sudokuda sayı bulma egzersizi yapabilirsin..
+        </p>
+        
+      </a>
+
+      <!-- Geriye Doğru Say -->
+      <a href="basamaktoplama.html" class="game-card">
+        <span class="game-icon">🔽</span>
+        <h2 class="game-title">Zihinden Toplama</h2>
+        <p class="game-description">
+          Zihinden Toplama Egzersizi
+        </p>
+        
+      </a>
+
+
+
+
+
+    </div>
+    
+    <div class="footer">
+      <p>💡 Her oyun farklı bir zihinsel beceriyi geliştirir</p>
+      <p style="margin-top: 8px; opacity: 0.7;">Developed by Melih Buğra Korkmaz</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>4. N-Back Sayı Oyunu</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+      color: #fff; 
+      font-family: 'Segoe UI', Arial, sans-serif; 
+      min-height: 100vh; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      padding: 20px;
+    }
+    .container { 
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      padding: 40px 32px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      animation: fadeIn 0.8s ease;
+    }
+    h1 { 
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .info { 
+      color: #e0e7ff;
+      font-size: 1rem;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .number { 
+      font-size: 4rem;
+      font-weight: 900;
+      margin: 40px 0;
+      letter-spacing: 2px;
+      color: #fff;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    .btns { 
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    button { 
+      font-size: 1.1rem;
+      padding: 14px 32px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+    .green { 
+      background: linear-gradient(135deg, #16a34a, #4ade80);
+      color: #fff;
+    }
+    .green:active { 
+      background: #16a34a;
+      transform: translateY(0);
+    }
+    .gray { 
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .gray:active { 
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(0);
+    }
+    .score { 
+      margin-top: 24px;
+      font-size: 1.2rem;
+      color: #e0e7ff;
+      font-weight: 600;
+    }
+    #startBtn {
+      margin-top: 20px;
+      padding: 12px 40px;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: #fff;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+    }
+    #startBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @media (max-width: 768px) {
+      .container { padding: 28px 20px; }
+      h1 { font-size: 1.5rem; }
+      .number { font-size: 3rem; }
+      button { padding: 12px 24px; font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>4. N-Back Sayı Oyunu</h1>
+    <div class="info">1-9 arası sayılar sesli okunur. 2 öncekiyle aynıysa <b>Yeşil</b> butona bas!</div>
+    <div class="number" id="number">-</div>
+    <div class="btns">
+      <button class="green" id="greenBtn">Yeşile Bas</button>
+      <button class="gray" id="skipBtn">Geç</button>
+    </div>
+    <div class="score" id="score">Doğru: 0 | Yanlış: 0</div>
+    <button id="startBtn">Başlat</button>
+  </div>
+  <script>
+    let sequence = [];
+    let current = 0;
+    let correct = 0, wrong = 0;
+    let running = false;
+    let nBack = 2;
+    let numberEl = document.getElementById('number');
+    let scoreEl = document.getElementById('score');
+    let greenBtn = document.getElementById('greenBtn');
+    let skipBtn = document.getElementById('skipBtn');
+    let startBtn = document.getElementById('startBtn');
+    let waiting = false;
+
+    function speakNumber(num) {
+      if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
+      const utter = new window.SpeechSynthesisUtterance(num.toString());
+      utter.lang = 'tr-TR';
+      window.speechSynthesis.speak(utter);
+    }
+
+    function nextNumber() {
+      if (!running) return;
+      waiting = false;
+      const num = Math.floor(Math.random() * 9) + 1;
+      sequence.push(num);
+      current = sequence.length - 1;
+      numberEl.textContent = num;
+      speakNumber(num);
+      greenBtn.disabled = false;
+      skipBtn.disabled = false;
+    }
+
+    function handleAnswer(isGreen) {
+      if (!running || waiting) return;
+      waiting = true;
+      let isCorrect = false;
+      if (current < nBack) {
+        // İlk nBack adımda cevap verilirse doğru/yanlış sayma, sadece geç
+        setTimeout(nextNumber, 600);
+        return;
+      }
+      if (isGreen) {
+        isCorrect = (sequence[current] === sequence[current - nBack]);
+        if (isCorrect) correct++;
+        else wrong++;
+      } else {
+        // Sadece yeşil butona basılmadıysa yanlış sayma, hiçbir şey yapma
+        setTimeout(nextNumber, 600);
+        return;
+      }
+      scoreEl.textContent = `Doğru: ${correct} | Yanlış: ${wrong}`;
+      greenBtn.disabled = true;
+      skipBtn.disabled = true;
+      setTimeout(nextNumber, 600);
+    }
+
+    greenBtn.addEventListener('click', () => handleAnswer(true));
+    skipBtn.addEventListener('click', () => handleAnswer(false));
+    startBtn.addEventListener('click', () => {
+      running = true;
+      sequence = [];
+      correct = 0;
+      wrong = 0;
+      scoreEl.textContent = `Doğru: 0 | Yanlış: 0`;
+      numberEl.textContent = '-';
+      greenBtn.disabled = true;
+      skipBtn.disabled = true;
+      waiting = false;
+      setTimeout(nextNumber, 800);
+    });
+    // Klavye kısayolları: Enter = Yeşil, Space = Geç
+    document.addEventListener('keydown', (e) => {
+      if (!running || waiting) return;
+      if (e.code === 'Enter') { handleAnswer(true); }
+      if (e.code === 'Space') { e.preventDefault(); handleAnswer(false); }
+    });
+  </script>
+</body>
+</html>

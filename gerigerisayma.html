@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Geriye Doğru İşlem</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+      color: #fff;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      padding: 40px 32px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      animation: fadeIn 0.8s ease;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .info {
+      color: #e0e7ff;
+      font-size: 1rem;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .settings {
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .settings label {
+      color: #e0e7ff;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+    select, input[type=number] {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    select:focus, input[type=number]:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.15);
+    }
+    input[type="number"] {
+      text-align: center;
+      width: 80px;
+    }
+    .number {
+      font-size: 4rem;
+      font-weight: 900;
+      margin: 32px 0;
+      letter-spacing: 2px;
+      color: #fff;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    .btns {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    button {
+      font-size: 1.1rem;
+      padding: 12px 24px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    .blue {
+      background: linear-gradient(135deg, #2563eb, #60a5fa);
+      color: #fff;
+    }
+    .gray {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    #userInput {
+      font-size: 1.2rem;
+      width: 150px;
+      text-align: center;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px 8px;
+      color: #fff;
+      font-weight: 600;
+    }
+    #userInput:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.15);
+    }
+    #userInput::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    .score {
+      margin-top: 24px;
+      font-size: 1.1rem;
+      color: #e0e7ff;
+      font-weight: 600;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @media (max-width: 768px) {
+      .container { padding: 28px 20px; }
+      h1 { font-size: 1.6rem; }
+      .number { font-size: 3rem; }
+      .btns { flex-direction: column; }
+      button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Geriye Doğru İşlem</h1>
+    <div class="info">1000’den 7’şer veya 13’er geri say. Odak gücünü artırır!</div>
+    <div class="settings">
+      <label for="step">Adım: </label>
+      <select id="step">
+        <option value="7">7'şer</option>
+        <option value="13">13'er</option>
+      </select>
+      <label for="start">Başlangıç: </label>
+      <input id="start" type="number" value="1000" min="1" max="10000">
+    </div>
+    <div class="number" id="number">-</div>
+    <div class="btns">
+      <input id="userInput" type="number" placeholder="Sonraki sayıyı yaz">
+      <button class="blue" id="checkBtn">Kontrol Et</button>
+      <button class="gray" id="resetBtn">Sıfırla</button>
+    </div>
+    <div class="score" id="score">Adım: 0</div>
+  </div>
+  <script>
+    let current = 1000;
+    let step = 7;
+    let count = 0;
+    let numberEl = document.getElementById('number');
+    let scoreEl = document.getElementById('score');
+    let checkBtn = document.getElementById('checkBtn');
+    let resetBtn = document.getElementById('resetBtn');
+    let stepSel = document.getElementById('step');
+    let startInput = document.getElementById('start');
+    let userInput = document.getElementById('userInput');
+    let correctCount = 0, wrongCount = 0;
+
+    function updateDisplay() {
+      numberEl.textContent = current;
+      scoreEl.textContent = `Adım: ${count} | Doğru: ${correctCount} | Yanlış: ${wrongCount}`;
+      userInput.value = '';
+      userInput.focus();
+    }
+
+    function check() {
+      const expected = current - step;
+      const userVal = parseInt(userInput.value, 10);
+      if (userVal === expected) {
+        correctCount++;
+        current = expected;
+        count++;
+        updateDisplay();
+      } else {
+        wrongCount++;
+        userInput.value = '';
+        userInput.placeholder = `Yanlış! Doğru: ${expected}`;
+        setTimeout(() => {
+          userInput.placeholder = 'Sonraki sayıyı yaz';
+          current = expected;
+          count++;
+          updateDisplay();
+        }, 1200);
+      }
+    }
+
+    function reset() {
+      current = parseInt(startInput.value, 10) || 1000;
+      count = 0;
+      correctCount = 0;
+      wrongCount = 0;
+      updateDisplay();
+    }
+
+    stepSel.addEventListener('change', () => {
+      step = parseInt(stepSel.value, 10);
+      reset();
+    });
+    startInput.addEventListener('change', reset);
+    checkBtn.addEventListener('click', check);
+    resetBtn.addEventListener('click', reset);
+    userInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') check();
+    });
+    // Klavye: R = Sıfırla
+    document.addEventListener('keydown', (e) => {
+      if (e.key.toLowerCase() === 'r') reset();
+    });
+    // Başlangıç
+    reset();
+  </script>
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zihinsel Takvim - Mental Aritmetik</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #87CEEB 0%, #B0C4DE 100%);
+            min-height: 100vh;
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+        }
+        .preview-screen {
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            border: 8px solid #2C5F8D;
+            box-shadow: inset 0 0 20px rgba(255,255,255,0.1);
+        }
+        .preview-timer { font-size: 2.5rem; }
+        .preview-date { font-size: 2rem; max-width: 300px; }
+        .preview-table-row {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 5px;
+            font-size: 0.7rem;
+        }
+        .preview-cell.highlight { background: yellow; }
+        .setting-label { color: #2C5F8D; font-size: 1.1rem; flex: 1; }
+        .setting-input { flex: 0 0 300px; }
+        .btn-game {
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            padding: 15px 50px;
+            font-size: 1.3rem;
+        }
+        .btn-game:hover { transform: translateY(-3px); color: white; }
+        .game-screen { display: none; }
+        .timer-display {
+            color: #E74C3C;
+            font-size: 3.5rem;
+            padding: 20px 50px;
+        }
+        .stage-badge { color: #E74C3C; font-size: 1.5rem; }
+        .dates-table { height: 600px; overflow-y: auto; }
+        .date-cell { background: #E8F4F8; }
+        .date-cell.active { background: #90EE90; }
+        .date-cell.answered { background: #FFB6C1; }
+        .big-date { font-size: 4rem; color: #2C5F8D; }
+        .day-buttons {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+        .btn-day {
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            padding: 15px;
+            font-size: 1.2rem;
+        }
+        .btn-day:hover { transform: translateY(-2px); }
+        .btn-day.correct { background: linear-gradient(135deg, #27AE60 0%, #229954 100%); }
+        .btn-day.wrong { background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%); }
+        .btn-skip {
+            background: linear-gradient(135deg, #95A5A6 0%, #7F8C8D 100%);
+            padding: 15px 40px;
+            font-size: 1.3rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="index.html">
+                🧠 Mental Aritmetik
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Ana Sayfa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="arkaarkayatoplama.html">Arka Arkaya Toplama</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="basamaktoplama.html">Basamak Toplama</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="zihinden_carpma.html">Zihinsel Çarpma</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="zihinseltakvim.html">Zihinsel Takvim</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Ayarlar Ekranı -->
+    <div class="container settings-screen" id="settingsScreen">
+        <div class="preview-screen rounded-4 p-4 mb-4 shadow-lg position-relative">
+            <div class="text-center mb-3">
+                <div class="preview-timer bg-white text-dark fw-bold p-3 px-5 rounded-3 d-inline-block shadow" id="previewTimer">01:00</div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="preview-date bg-white text-dark fw-bold p-4 rounded-3 my-3 mx-auto shadow" id="previewDate">19-04-1913</div>
+                    <div class="text-center">
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-sm btn-light">PST</button>
+                            <button class="btn btn-sm btn-light">SAL</button>
+                            <button class="btn btn-sm btn-light">ÇAR</button>
+                            <button class="btn btn-sm btn-light">PER</button>
+                            <button class="btn btn-sm btn-light">CUM</button>
+                            <button class="btn btn-sm btn-light">CMT</button>
+                            <button class="btn btn-sm btn-light">PAZ</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-container bg-white rounded-4 p-5 shadow mt-4" style="background: rgba(255, 255, 255, 0.95) !important;">
+            <div class="setting-row mb-4 d-flex align-items-center justify-content-between">
+                <label class="setting-label fw-semibold">Günler için kullanılacak kısaltmalar :</label>
+                <select class="form-select setting-input" id="dayAbbrev">
+                    <option value="PST-SAL-CAR-PER-CUM-CMT-PAZ" selected>PST-SAL-ÇAR-PER-CUM-CMT-PAZ</option>
+                    <option value="MON-TUE-WED-THU-FRI-SAT-SUN">MON-TUE-WED-THU-FRI-SAT-SUN</option>
+                </select>
+            </div>
+
+            <div class="setting-row mb-4 d-flex align-items-center justify-content-between">
+                <label class="setting-label fw-semibold">En soldaki buton :</label>
+                <select class="form-select setting-input" id="leftButton">
+                    <option value="PAZARTESİ" selected>PAZARTESİ</option>
+                    <option value="PAZAR">PAZAR</option>
+                </select>
+            </div>
+
+            <div class="setting-row mb-4 d-flex align-items-center justify-content-between">
+                <label class="setting-label fw-semibold">Klavyeden '0' tuşuyla girilecek gün :</label>
+                <select class="form-select setting-input" id="zeroKey">
+                    <option value="PAZARTESİ" selected>PAZARTESİ</option>
+                    <option value="SALI">SALI</option>
+                    <option value="ÇARŞAMBA">ÇARŞAMBA</option>
+                    <option value="PERŞEMBE">PERŞEMBE</option>
+                    <option value="CUMA">CUMA</option>
+                    <option value="CUMARTESİ">CUMARTESİ</option>
+                    <option value="PAZAR">PAZAR</option>
+                </select>
+            </div>
+
+            <div class="setting-row mb-4 d-flex align-items-center justify-content-between">
+                <label class="setting-label fw-semibold">Aktif soru ışıklandırılsın :</label>
+                <select class="form-select setting-input" id="highlightActive">
+                    <option value="Evet" selected>Evet</option>
+                    <option value="Hayır">Hayır</option>
+                </select>
+            </div>
+
+            <div class="setting-row mb-4 d-flex align-items-center justify-content-between">
+                <label class="setting-label fw-semibold">Soru formatı :</label>
+                <input type="text" class="form-control setting-input" id="dateFormat" value="18-05-1972" readonly>
+            </div>
+
+            <div class="setting-row mb-4 d-flex align-items-center justify-content-between">
+                <label class="setting-label fw-semibold">Kronometre aktif olsun mu? :</label>
+                <select class="form-select setting-input" id="timerActive">
+                    <option value="Evet" selected>Evet</option>
+                    <option value="Hayır">Hayır</option>
+                </select>
+            </div>
+
+            <div class="setting-row mb-4 d-flex align-items-center justify-content-between">
+                <label class="setting-label fw-semibold">Konsantrasyon Süresi (sn.) :</label>
+                <input type="number" class="form-control setting-input" id="focusTime" value="5" min="1" max="60">
+            </div>
+
+            <div class="text-center mt-4">
+                <button class="btn btn-game text-white border-0 rounded-3 shadow m-2 fw-bold" onclick="goBack()">GERİ</button>
+                <button class="btn btn-game text-white border-0 rounded-3 shadow m-2 fw-bold" onclick="showExplanations()">AÇIKLAMALAR</button>
+                <button class="btn btn-game text-white border-0 rounded-3 shadow m-2 fw-bold" onclick="startGame()">BAŞLAT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Oyun Ekranı -->
+    <div class="container-fluid game-screen" id="gameScreen">
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="game-header bg-white p-4 rounded-3 mb-3 shadow d-flex justify-content-between align-items-center" style="background: rgba(255, 255, 255, 0.95) !important;">
+                    <h2 class="fw-bold text-primary mb-0">ZİHİNSEL TAKVİM</h2>
+                    <div class="timer-display bg-white fw-bold rounded-pill d-inline-block shadow" id="gameTimer">00:00</div>
+                    <div class="stage-badge fw-bold">YARIŞMA ETABI</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-4">
+                <div class="dates-table bg-white rounded-3 p-3 shadow">
+                    <div class="row g-2" id="datesContainer">
+                        <!-- Tarihler buraya eklenecek -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="question-display bg-white p-5 rounded-3 shadow mb-3">
+                    <div class="big-date fw-bold text-center my-3" id="currentDate">20-11-1849</div>
+                    
+                    <div class="day-buttons my-3" id="dayButtons">
+                        <button class="btn btn-day text-white border-0 rounded-3 shadow fw-bold" onclick="checkAnswer(0)">PST</button>
+                        <button class="btn btn-day text-white border-0 rounded-3 shadow fw-bold" onclick="checkAnswer(1)">SAL</button>
+                        <button class="btn btn-day text-white border-0 rounded-3 shadow fw-bold" onclick="checkAnswer(2)">ÇAR</button>
+                        <button class="btn btn-day text-white border-0 rounded-3 shadow fw-bold" onclick="checkAnswer(3)">PER</button>
+                        <button class="btn btn-day text-white border-0 rounded-3 shadow fw-bold" onclick="checkAnswer(4)">CUM</button>
+                        <button class="btn btn-day text-white border-0 rounded-3 shadow fw-bold" onclick="checkAnswer(5)">CMT</button>
+                        <button class="btn btn-day text-white border-0 rounded-3 shadow fw-bold" onclick="checkAnswer(6)">PAZ</button>
+                    </div>
+
+                    <button class="btn btn-skip text-white border-0 rounded-pill shadow fw-bold my-3 d-block mx-auto" onclick="skipQuestion()">ATLA</button>
+                </div>
+
+                <div class="text-center mt-3">
+                    <button class="btn btn-game text-white border-0 rounded-3 shadow m-2 fw-bold" onclick="goBackToSettings()">GERİ</button>
+                    <button class="btn btn-game text-white border-0 rounded-3 shadow m-2 fw-bold" onclick="finishGame()">BİTİR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let dates = [];
+        let currentIndex = 0;
+        let correctAnswers = 0;
+        let totalQuestions = 75;
+        let timerInterval;
+        let gameTime = 0;
+        let focusTime = 5;
+
+        // Rastgele tarih oluştur
+        function generateRandomDate() {
+            const day = Math.floor(Math.random() * 28) + 1;
+            const month = Math.floor(Math.random() * 12) + 1;
+            const year = Math.floor(Math.random() * (2100 - 1600)) + 1600;
+            return {
+                date: `${String(day).padStart(2, '0')}-${String(month).padStart(2, '0')}-${year}`,
+                day: day,
+                month: month,
+                year: year
+            };
+        }
+
+        // Haftanın gününü hesapla (Zeller's congruence)
+        function getDayOfWeek(day, month, year) {
+            if (month < 3) {
+                month += 12;
+                year--;
+            }
+            const q = day;
+            const m = month;
+            const k = year % 100;
+            const j = Math.floor(year / 100);
+            const h = (q + Math.floor((13 * (m + 1)) / 5) + k + Math.floor(k / 4) + Math.floor(j / 4) - 2 * j) % 7;
+            
+            // Zeller's formula: 0=Sat, 1=Sun, 2=Mon, 3=Tue, 4=Wed, 5=Thu, 6=Fri
+            // Convert to: 0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri, 5=Sat, 6=Sun
+            const dayIndex = (h + 5) % 7;
+            return dayIndex;
+        }
+
+        function generateDates() {
+            dates = [];
+            for (let i = 0; i < totalQuestions; i++) {
+                dates.push(generateRandomDate());
+            }
+            displayDates();
+        }
+
+        function displayDates() {
+            const container = document.getElementById('datesContainer');
+            container.innerHTML = '';
+            
+            dates.forEach((dateObj, index) => {
+                const col = document.createElement('div');
+                col.className = 'col-4';
+                col.innerHTML = `
+                    <div class="date-cell p-2 m-1 rounded text-center fw-semibold ${index === currentIndex ? 'active' : ''}" id="date-${index}">
+                        ${index + 1}. ${dateObj.date}
+                    </div>
+                `;
+                container.appendChild(col);
+            });
+        }
+
+        function startGame() {
+            focusTime = parseInt(document.getElementById('focusTime').value);
+            
+            // Ekranları değiştir
+            document.getElementById('settingsScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            
+            // Tarihleri oluştur
+            generateDates();
+            currentIndex = 0;
+            correctAnswers = 0;
+            gameTime = 0;
+            
+            // İlk soruyu göster
+            showQuestion();
+            
+            // Kronometreyi başlat
+            if (document.getElementById('timerActive').value === 'Evet') {
+                startTimer();
+            }
+        }
+
+        function showQuestion() {
+            if (currentIndex >= dates.length) {
+                finishGame();
+                return;
+            }
+            
+            const dateObj = dates[currentIndex];
+            document.getElementById('currentDate').textContent = dateObj.date;
+            
+            // Aktif tarihi vurgula
+            document.querySelectorAll('.date-cell').forEach(cell => {
+                cell.classList.remove('active');
+            });
+            document.getElementById(`date-${currentIndex}`).classList.add('active');
+            
+            // Butonları sıfırla
+            document.querySelectorAll('.btn-day').forEach(btn => {
+                btn.classList.remove('correct', 'wrong');
+            });
+        }
+
+        function checkAnswer(selectedDay) {
+            const dateObj = dates[currentIndex];
+            const correctDay = getDayOfWeek(dateObj.day, dateObj.month, dateObj.year);
+            
+            const buttons = document.querySelectorAll('.btn-day');
+            
+            if (selectedDay === correctDay) {
+                buttons[selectedDay].classList.add('correct');
+                correctAnswers++;
+                
+                setTimeout(() => {
+                    document.getElementById(`date-${currentIndex}`).classList.add('answered');
+                    currentIndex++;
+                    showQuestion();
+                }, 500);
+            } else {
+                buttons[selectedDay].classList.add('wrong');
+                buttons[correctDay].classList.add('correct');
+                
+                setTimeout(() => {
+                    document.getElementById(`date-${currentIndex}`).classList.add('answered');
+                    currentIndex++;
+                    showQuestion();
+                }, 1500);
+            }
+        }
+
+        function skipQuestion() {
+            document.getElementById(`date-${currentIndex}`).classList.add('answered');
+            currentIndex++;
+            showQuestion();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                gameTime++;
+                const minutes = Math.floor(gameTime / 60);
+                const seconds = gameTime % 60;
+                document.getElementById('gameTimer').textContent = 
+                    `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function finishGame() {
+            clearInterval(timerInterval);
+            const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+            alert(`Oyun Bitti!\n\nDoğru Cevaplar: ${correctAnswers}/${totalQuestions}\nBaşarı Oranı: ${percentage}%\nSüre: ${Math.floor(gameTime / 60)}:${String(gameTime % 60).padStart(2, '0')}`);
+            goBackToSettings();
+        }
+
+        function goBackToSettings() {
+            clearInterval(timerInterval);
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('settingsScreen').style.display = 'block';
+        }
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        function showExplanations() {
+            alert('Zihinsel Takvim Oyunu:\n\n' +
+                  '1. Ekranda görünen tarihin hangi güne denk geldiğini bulun.\n' +
+                  '2. Doğru gün butonuna tıklayın.\n' +
+                  '3. Emin değilseniz ATLA butonuna basın.\n' +
+                  '4. 75 soruyu tamamlayın ve rekor kırın!\n\n' +
+                  'İpucu: Zeller formülünü kullanarak haftanın gününü hesaplayabilirsiniz.');
+        }
+
+        // Klavye desteği ekle
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('gameScreen').style.display === 'block') {
+                const keyMap = {
+                    '0': 0, '1': 0, '2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '7': 6
+                };
+                
+                if (e.key in keyMap) {
+                    checkAnswer(keyMap[e.key]);
+                } else if (e.key === 'Enter') {
+                    skipQuestion();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

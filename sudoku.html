@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sudoku</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+    color: #fff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    padding: 40px 32px;
+    text-align: center;
+    animation: fadeIn 0.8s ease;
+}
+
+h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 32px;
+    background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+#sudoku {
+    display: grid;
+    grid-template-columns: repeat(9, 45px);
+    gap: 2px;
+    justify-content: center;
+    margin: 0 auto 32px auto;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px;
+    border-radius: 12px;
+}
+
+input {
+    width: 45px;
+    height: 45px;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.9);
+    color: #1a1a2e;
+    border-radius: 4px;
+}
+
+input:focus {
+    outline: none;
+    border-color: #4f46e5;
+    background: #fff;
+}
+
+.fixed {
+    background-color: rgba(79, 70, 229, 0.2);
+    font-weight: 700;
+    color: #4f46e5;
+}
+
+button {
+    margin-top: 20px;
+    padding: 14px 48px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: #fff;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 768px) {
+    #sudoku {
+        grid-template-columns: repeat(9, 35px);
+    }
+    input {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+    .container {
+        padding: 24px 16px;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🧩 Sudoku Oyunu</h2>
+    <div id="sudoku"></div>
+    <button onclick="kontrolEt()">Kontrol Et</button>
+</div>
+
+<script>
+const puzzle = [
+[5,3,0,0,7,0,0,0,0],
+[6,0,0,1,9,5,0,0,0],
+[0,9,8,0,0,0,0,6,0],
+[8,0,0,0,6,0,0,0,3],
+[4,0,0,8,0,3,0,0,1],
+[7,0,0,0,2,0,0,0,6],
+[0,6,0,0,0,0,2,8,0],
+[0,0,0,4,1,9,0,0,5],
+[0,0,0,0,8,0,0,7,9]
+];
+
+const sudoku = document.getElementById("sudoku");
+
+function createBoard() {
+    for(let row=0; row<9; row++){
+        for(let col=0; col<9; col++){
+            const input = document.createElement("input");
+            input.type = "number";
+            input.min = 1;
+            input.max = 9;
+
+            if(puzzle[row][col] !== 0){
+                input.value = puzzle[row][col];
+                input.classList.add("fixed");
+                input.disabled = true;
+            }
+
+            input.dataset.row = row;
+            input.dataset.col = col;
+
+            sudoku.appendChild(input);
+        }
+    }
+}
+
+function kontrolEt() {
+    const inputs = document.querySelectorAll("#sudoku input");
+    for(let input of inputs){
+        if(!input.value){
+            alert("Tüm kutuları doldurun!");
+            return;
+        }
+    }
+    alert("Kontrol tamamlandı (şimdilik sadece doluluk kontrolü var 😄)");
+}
+
+createBoard();
+</script>
+
+</body>
+</html>
