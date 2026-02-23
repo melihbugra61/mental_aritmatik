@@ -9,6 +9,23 @@
     *{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial;background:linear-gradient(180deg,#0b1220 0%,#071221 100%);color:#e6eef8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
     .wrap{width:100%;max-width:860px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.03);padding:20px;border-radius:12px}
     header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px}
+    .home-btn {
+      display: inline-block;
+      margin-bottom: 24px;
+      padding: 10px 24px;
+      background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+      color: #2a5298;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+    .home-btn:hover {
+      background: linear-gradient(135deg, #e0e7ff 0%, #fff 100%);
+      color: #7e22ce;
     h1{margin:0;font-size:20px;color:var(--accent)}
     .controls{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
     .field{background:rgba(255,255,255,0.02);padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
@@ -34,6 +51,7 @@
   </style>
 </head>
 <body>
+  <a href="index.html" class="home-btn">Anasayfa</a>
   <div class="wrap">
     <header>
       <h1>Üslü Sayılar — Çalışma</h1>

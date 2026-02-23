@@ -37,7 +37,6 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    .info { 
       color: #e0e7ff;
       font-size: 1rem;
       margin-bottom: 20px;
@@ -49,6 +48,7 @@
       margin: 40px 0;
       letter-spacing: 2px;
       color: #fff;
+    .container { 
       text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
     .btns { 
@@ -60,6 +60,23 @@
     }
     button { 
       font-size: 1.1rem;
+    .home-btn {
+      display: inline-block;
+      margin-bottom: 24px;
+      padding: 10px 24px;
+      background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+      color: #2a5298;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+    .home-btn:hover {
+      background: linear-gradient(135deg, #e0e7ff 0%, #fff 100%);
+      color: #7e22ce;
       padding: 14px 32px;
       border-radius: 12px;
       border: none;
@@ -125,6 +142,7 @@
   </style>
 </head>
 <body>
+  <a href="index.html" class="home-btn">Anasayfa</a>
   <div class="container">
     <h1>4. N-Back Sayı Oyunu</h1>
     <div class="info">1-9 arası sayılar sesli okunur. 2 öncekiyle aynıysa <b>Yeşil</b> butona bas!</div>

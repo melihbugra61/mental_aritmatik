@@ -29,6 +29,23 @@
       animation: fadeIn 0.8s ease;
     }
     header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+    .home-btn {
+      display: inline-block;
+      margin-bottom: 24px;
+      padding: 10px 24px;
+      background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+      color: #2a5298;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+    .home-btn:hover {
+      background: linear-gradient(135deg, #e0e7ff 0%, #fff 100%);
+      color: #7e22ce;
     h1{
       margin:0;
       font-size:1.8rem;
@@ -111,6 +128,7 @@
   </style>
 </head>
 <body>
+  <a href="index.html" class="home-btn">Anasayfa</a>
   <div class="wrap">
     <header>
       <h1>Köklü Sayılar — Çalışma</h1>

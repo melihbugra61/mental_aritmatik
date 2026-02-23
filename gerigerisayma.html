@@ -29,6 +29,23 @@
       animation: fadeIn 0.8s ease;
     }
     h1 {
+          .home-btn {
+            display: inline-block;
+            margin-bottom: 24px;
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+            color: #2a5298;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: background 0.2s;
+            cursor: pointer;
+          }
+          .home-btn:hover {
+            background: linear-gradient(135deg, #e0e7ff 0%, #fff 100%);
+            color: #7e22ce;
       font-size: 2rem;
       font-weight: 700;
       margin-bottom: 20px;
@@ -154,6 +171,7 @@
   </style>
 </head>
 <body>
+  <a href="index.html" class="home-btn">Anasayfa</a>
   <div class="container">
     <h1>Geriye Doğru İşlem</h1>
     <div class="info">1000’den 7’şer veya 13’er geri say. Odak gücünü artırır!</div>

@@ -33,6 +33,24 @@
       margin-bottom: 12px;
       font-weight: 700;
     }
+    .home-btn {
+      display: inline-block;
+      margin-bottom: 24px;
+      padding: 10px 24px;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: white;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .home-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+    }
     .subtitle {
       color: #64748b;
       font-size: 0.95rem;
@@ -263,6 +281,7 @@
   </style>
 </head>
 <body>
+  <a href="index.html" class="home-btn">🏠 Anasayfa</a>
   <div class="container">
     <!-- Start Screen -->
     <div class="start-screen active" id="startScreen">
